@@ -4,6 +4,7 @@ const emit = defineEmits<{
 }>()
 
 const { result, copyToClipboard, share } = useChurrascoCalculator()
+const totalMeatsKg = computed(() => Math.round(result.value.meats.reduce((sum, item) => sum + item.quantity, 0) * 10) / 10)
 const copied = ref(false)
 const toast = useToast()
 
@@ -47,6 +48,10 @@ async function handleShare() {
         >
           <span class="text-stone-300 text-sm">{{ item.name }}</span>
           <span class="font-bold text-amber-300 tabular-nums">{{ item.quantity }} {{ item.unit }}</span>
+        </div>
+        <div class="flex items-center justify-between px-5 py-3 bg-stone-800/30">
+          <span class="text-stone-200 text-sm font-semibold">Total de Carnes</span>
+          <span class="font-bold text-amber-400 tabular-nums">{{ totalMeatsKg }} kg</span>
         </div>
       </div>
     </div>

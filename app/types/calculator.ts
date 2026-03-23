@@ -1,6 +1,6 @@
 export type DrinkIntensity = 'light' | 'moderate' | 'heavy'
 export type EventDuration = 'short' | 'medium' | 'long'
-export type MeatCategory = 'bovine' | 'pork' | 'chicken' | 'other'
+export type MeatCategory = 'bovine' | 'pork' | 'chicken'
 
 export interface MeatOption {
   id: string

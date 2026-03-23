@@ -110,6 +110,8 @@ export function useChurrascoCalculator() {
     if (r.meats.length > 0) {
       lines.push('CARNES:')
       r.meats.forEach((item) => lines.push(`  ${item.name}: ${item.quantity} ${item.unit}`))
+      const totalKg = round(r.meats.reduce((sum, item) => sum + item.quantity, 0))
+      lines.push(`  Total: ${totalKg} kg`)
       lines.push('')
     }
 

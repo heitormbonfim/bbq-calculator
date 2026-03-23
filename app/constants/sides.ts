@@ -7,5 +7,6 @@ export const SIDE_OPTIONS: SideOption[] = [
   { id: 'arroz', name: 'Arroz', icon: 'i-lucide-cooking-pot', perPerson: 100, unit: 'g' },
   { id: 'salada', name: 'Salada', icon: 'i-lucide-leaf', perPerson: 80, unit: 'g' },
   { id: 'mandioca', name: 'Mandioca', icon: 'i-lucide-carrot', perPerson: 100, unit: 'g' },
-  { id: 'maionese', name: 'Maionese', icon: 'i-lucide-egg', perPerson: 80, unit: 'g' }
+  { id: 'maionese', name: 'Maionese', icon: 'i-lucide-egg', perPerson: 80, unit: 'g' },
+  { id: 'queijo-coalho', name: 'Queijo Coalho', icon: 'i-lucide-cake-slice', perPerson: 80, unit: 'g' }
 ]
