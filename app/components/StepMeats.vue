@@ -21,9 +21,12 @@ function getPriority(id: string): MeatPriority {
   return state.selectedMeats.find((s) => s.id === id)?.priority ?? 'normal'
 }
 
-function setPriority(id: string, priority: MeatPriority) {
+function cyclePriority(id: string) {
   const selection = state.selectedMeats.find((s) => s.id === id)
-  if (selection) selection.priority = priority
+  if (!selection) return
+  const order: MeatPriority[] = ['normal', 'high', 'low']
+  const idx = order.indexOf(selection.priority)
+  selection.priority = order[(idx + 1) % order.length]
 }
 
 function toggleCategory(categoryId: string) {
@@ -55,7 +58,9 @@ const priorityConfig: Record<MeatPriority, { icon: string; label: string; color:
   high: { icon: 'i-lucide-trending-up', label: 'Mais', color: 'text-green-400', bg: 'bg-green-500/20', ring: 'ring-green-500/40' }
 }
 
-const priorities = Object.entries(priorityConfig) as [MeatPriority, typeof priorityConfig[MeatPriority]][]
+function getPriorityConfig(id: string) {
+  return priorityConfig[getPriority(id)]
+}
 </script>
 
 <template>
@@ -129,25 +134,19 @@ const priorities = Object.entries(priorityConfig) as [MeatPriority, typeof prior
             </span>
           </button>
 
-          <div
+          <button
             v-if="isSelected(meat.id)"
-            class="flex items-center gap-1 px-3 pb-2.5 -mt-0.5"
+            class="flex items-center justify-center gap-1.5 w-full px-3 pb-2.5 -mt-0.5 active:scale-[0.97] transition-transform"
+            @click.stop="cyclePriority(meat.id)"
           >
-            <button
-              v-for="[key, p] in priorities"
-              :key="key"
-              class="flex items-center gap-0.5 px-2 py-1 rounded-md text-[11px] font-medium transition-all active:scale-95"
-              :class="[
-                getPriority(meat.id) === key
-                  ? [p.bg, p.color, 'ring-1', p.ring]
-                  : 'text-stone-600 hover:text-stone-400'
-              ]"
-              @click.stop="setPriority(meat.id, key)"
+            <div
+              class="flex items-center justify-center gap-1 w-full py-1.5 rounded-lg text-[11px] font-medium ring-1 transition-all"
+              :class="[getPriorityConfig(meat.id).bg, getPriorityConfig(meat.id).color, getPriorityConfig(meat.id).ring]"
             >
-              <UIcon :name="p.icon" class="size-3" />
-              {{ p.label }}
-            </button>
-          </div>
+              <UIcon :name="getPriorityConfig(meat.id).icon" class="size-3" />
+              {{ getPriorityConfig(meat.id).label }}
+            </div>
+          </button>
         </div>
       </div>
     </div>
