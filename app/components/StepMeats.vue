@@ -127,7 +127,7 @@ function getPriorityConfig(id: string) {
               />
             </div>
             <span
-              class="text-sm font-medium truncate"
+              class="text-xs sm:text-sm font-medium text-left leading-tight"
               :class="isSelected(meat.id) ? 'text-amber-200' : 'text-stone-300'"
             >
               {{ meat.name }}
