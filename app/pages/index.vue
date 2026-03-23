@@ -50,7 +50,7 @@ function confirmRestart() {
   restart()
 }
 
-const stepLabels = ['Próximo: Carnes', 'Próximo: Bebidas', 'Próximo: Acompanhamentos', 'Próximo: Essenciais', 'Ver Resultado']
+const isLastStep = computed(() => currentStep.value === totalSteps - 2)
 </script>
 
 <template>
@@ -66,7 +66,7 @@ const stepLabels = ['Próximo: Carnes', 'Próximo: Bebidas', 'Próximo: Acompanh
       </div>
     </header>
 
-    <main class="flex-1 max-w-lg mx-auto w-full px-4 pb-28">
+    <main class="flex-1 max-w-lg mx-auto w-full px-4 pb-28 overflow-x-hidden">
       <Transition
         :name="direction === 'left' ? 'slide-left' : 'slide-right'"
         mode="out-in"
@@ -85,13 +85,13 @@ const stepLabels = ['Próximo: Carnes', 'Próximo: Bebidas', 'Próximo: Acompanh
       class="fixed bottom-0 inset-x-0 z-50"
     >
       <div class="bg-stone-950/80 backdrop-blur-xl border-t border-stone-800/50">
-        <div class="max-w-lg mx-auto px-4 py-3 flex gap-3" style="padding-bottom: max(0.75rem, env(safe-area-inset-bottom))">
+        <div class="max-w-lg mx-auto px-4 py-3 grid grid-cols-3 gap-3" style="padding-bottom: max(0.75rem, env(safe-area-inset-bottom))">
           <UButton
-            v-if="currentStep > 0"
             size="lg"
             variant="ghost"
             icon="i-lucide-arrow-left"
-            class="shrink-0"
+            :disabled="currentStep === 0"
+            class="w-full justify-center [&>span]:truncate"
             @click="prev"
           >
             Voltar
@@ -101,19 +101,20 @@ const stepLabels = ['Próximo: Carnes', 'Próximo: Bebidas', 'Próximo: Acompanh
             size="lg"
             variant="ghost"
             icon="i-lucide-rotate-ccw"
-            class="shrink-0"
+            class="w-full justify-center [&>span]:truncate"
             @click="showResetModal = true"
-          />
+          >
+            Reset
+          </UButton>
 
           <UButton
             size="lg"
-            block
             :disabled="!canProceed"
-            class="flex-1"
             trailing-icon="i-lucide-arrow-right"
+            class="w-full justify-center [&>span]:truncate"
             @click="next"
           >
-            {{ stepLabels[currentStep] || 'Próximo' }}
+            {{ isLastStep ? 'Resultado' : 'Próximo' }}
           </UButton>
         </div>
       </div>

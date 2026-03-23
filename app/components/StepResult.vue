@@ -143,21 +143,25 @@ async function handleShare() {
       </UButton>
     </div>
 
-    <div class="flex items-center justify-between pt-1">
-      <button
-        class="py-3 text-sm font-medium text-stone-500 hover:text-stone-300 transition-colors"
+    <div class="grid grid-cols-2 gap-3 pt-1">
+      <UButton
+        block
+        size="lg"
+        variant="outline"
+        icon="i-lucide-arrow-left"
         @click="emit('back')"
       >
-        <UIcon name="i-lucide-arrow-left" class="size-4 mr-1 inline" />
         Voltar
-      </button>
-      <button
-        class="py-3 text-sm font-medium text-stone-500 hover:text-stone-300 transition-colors"
+      </UButton>
+      <UButton
+        block
+        size="lg"
+        variant="outline"
+        icon="i-lucide-rotate-ccw"
         @click="emit('restart')"
       >
-        <UIcon name="i-lucide-rotate-ccw" class="size-4 mr-1 inline" />
         Recalcular
-      </button>
+      </UButton>
     </div>
   </div>
 </template>
