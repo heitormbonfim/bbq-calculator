@@ -8,7 +8,8 @@ const steps = [
   { icon: 'i-lucide-users', label: 'Pessoas' },
   { icon: 'i-lucide-beef', label: 'Carnes' },
   { icon: 'i-lucide-beer', label: 'Bebidas' },
-  { icon: 'i-lucide-utensils', label: 'Extras' },
+  { icon: 'i-lucide-salad', label: 'Extras' },
+  { icon: 'i-lucide-flame-kindling', label: 'Essenciais' },
   { icon: 'i-lucide-clipboard-list', label: 'Resultado' }
 ]
 </script>

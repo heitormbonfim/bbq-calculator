@@ -6,14 +6,16 @@ const { state } = useChurrascoCalculator()
 const beverages = [
   { key: 'beer' as const, label: 'Cerveja', icon: 'i-lucide-beer', color: 'text-yellow-400' },
   { key: 'softDrinks' as const, label: 'Refrigerante', icon: 'i-lucide-cup-soda', color: 'text-red-400' },
-  { key: 'water' as const, label: 'Agua', icon: 'i-lucide-droplets', color: 'text-blue-400' },
-  { key: 'juice' as const, label: 'Suco', icon: 'i-lucide-citrus', color: 'text-orange-400' }
+  { key: 'water' as const, label: 'Água', icon: 'i-lucide-droplets', color: 'text-blue-400' },
+  { key: 'juice' as const, label: 'Suco', icon: 'i-lucide-citrus', color: 'text-orange-400' },
+  { key: 'wine' as const, label: 'Vinho', icon: 'i-lucide-wine', color: 'text-purple-400' },
+  { key: 'energy' as const, label: 'Energético', icon: 'i-lucide-zap', color: 'text-green-400' }
 ]
 
 const intensities: { value: DrinkIntensity; label: string; desc: string }[] = [
   { value: 'light', label: 'Leve', desc: '~2 latas/pessoa' },
-  { value: 'moderate', label: 'Moderado', desc: '~3 latas/pessoa' },
-  { value: 'heavy', label: 'Pesado', desc: '~5 latas/pessoa' }
+  { value: 'moderate', label: 'Moderado', desc: '~4 latas/pessoa' },
+  { value: 'heavy', label: 'Pesado', desc: '~6 latas/pessoa' }
 ]
 </script>
 

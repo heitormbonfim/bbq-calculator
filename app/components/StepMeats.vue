@@ -1,30 +1,44 @@
 <script setup lang="ts">
+import type { MeatPriority } from '~/types/calculator'
 import { MEAT_OPTIONS, MEAT_CATEGORIES } from '~/constants/meats'
 
 const { state } = useChurrascoCalculator()
 
+function isSelected(id: string): boolean {
+  return state.selectedMeats.some((s) => s.id === id)
+}
+
 function toggleMeat(id: string) {
-  const idx = state.selectedMeats.indexOf(id)
+  const idx = state.selectedMeats.findIndex((s) => s.id === id)
   if (idx >= 0) {
     state.selectedMeats.splice(idx, 1)
   } else {
-    state.selectedMeats.push(id)
+    state.selectedMeats.push({ id, priority: 'normal' })
   }
+}
+
+function getPriority(id: string): MeatPriority {
+  return state.selectedMeats.find((s) => s.id === id)?.priority ?? 'normal'
+}
+
+function setPriority(id: string, priority: MeatPriority) {
+  const selection = state.selectedMeats.find((s) => s.id === id)
+  if (selection) selection.priority = priority
 }
 
 function toggleCategory(categoryId: string) {
   const meatsInCategory = MEAT_OPTIONS.filter((m) => m.category === categoryId)
-  const allSelected = meatsInCategory.every((m) => state.selectedMeats.includes(m.id))
+  const allSelected = meatsInCategory.every((m) => isSelected(m.id))
 
   if (allSelected) {
     meatsInCategory.forEach((m) => {
-      const idx = state.selectedMeats.indexOf(m.id)
+      const idx = state.selectedMeats.findIndex((s) => s.id === m.id)
       if (idx >= 0) state.selectedMeats.splice(idx, 1)
     })
   } else {
     meatsInCategory.forEach((m) => {
-      if (!state.selectedMeats.includes(m.id)) {
-        state.selectedMeats.push(m.id)
+      if (!isSelected(m.id)) {
+        state.selectedMeats.push({ id: m.id, priority: 'normal' })
       }
     })
   }
@@ -32,8 +46,16 @@ function toggleCategory(categoryId: string) {
 
 function isCategorySelected(categoryId: string): boolean {
   const meatsInCategory = MEAT_OPTIONS.filter((m) => m.category === categoryId)
-  return meatsInCategory.every((m) => state.selectedMeats.includes(m.id))
+  return meatsInCategory.every((m) => isSelected(m.id))
 }
+
+const priorityConfig: Record<MeatPriority, { icon: string; label: string; color: string; bg: string; ring: string }> = {
+  low: { icon: 'i-lucide-trending-down', label: 'Menos', color: 'text-red-400', bg: 'bg-red-500/20', ring: 'ring-red-500/40' },
+  normal: { icon: 'i-lucide-minus', label: 'Normal', color: 'text-stone-400', bg: 'bg-stone-500/20', ring: 'ring-stone-500/40' },
+  high: { icon: 'i-lucide-trending-up', label: 'Mais', color: 'text-green-400', bg: 'bg-green-500/20', ring: 'ring-green-500/40' }
+}
+
+const priorities = Object.entries(priorityConfig) as [MeatPriority, typeof priorityConfig[MeatPriority]][]
 </script>
 
 <template>
@@ -41,6 +63,18 @@ function isCategorySelected(categoryId: string): boolean {
     <div>
       <h2 class="text-xl font-bold text-stone-100 mb-1">Escolha as carnes</h2>
       <p class="text-sm text-stone-400">Selecione os cortes para o churrasco</p>
+    </div>
+
+    <div class="bg-stone-900/50 border border-stone-800/50 rounded-2xl px-4 py-3">
+      <div class="flex items-start gap-2">
+        <UIcon name="i-lucide-info" class="size-4 text-stone-500 mt-0.5 shrink-0" />
+        <p class="text-xs text-stone-500 leading-relaxed">
+          Ao selecionar um corte, ajuste a prioridade:
+          <span class="text-green-400 font-medium">Mais</span> recebe uma fatia maior,
+          <span class="text-stone-300 font-medium">Normal</span> distribui igual e
+          <span class="text-red-400 font-medium">Menos</span> recebe uma fatia menor do total de carne.
+        </p>
+      </div>
     </div>
 
     <div v-for="category in MEAT_CATEGORIES" :key="category.id" class="space-y-2">
@@ -59,38 +93,62 @@ function isCategorySelected(categoryId: string): boolean {
       </button>
 
       <div class="grid grid-cols-2 gap-2">
-        <button
+        <div
           v-for="meat in MEAT_OPTIONS.filter((m) => m.category === category.id)"
           :key="meat.id"
-          class="flex items-center gap-3 py-3 px-4 rounded-2xl border transition-all active:scale-[0.97]"
+          class="rounded-2xl border transition-all overflow-hidden"
           :class="[
-            state.selectedMeats.includes(meat.id)
+            isSelected(meat.id)
               ? 'bg-amber-500/15 border-amber-500/50'
               : 'bg-stone-900/50 border-stone-800/50 hover:border-stone-700'
           ]"
-          @click="toggleMeat(meat.id)"
         >
+          <button
+            class="flex items-center gap-3 w-full py-3 px-4 active:scale-[0.97] transition-transform"
+            @click="toggleMeat(meat.id)"
+          >
+            <div
+              class="size-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-all"
+              :class="[
+                isSelected(meat.id)
+                  ? 'bg-amber-500 border-amber-500'
+                  : 'border-stone-600'
+              ]"
+            >
+              <UIcon
+                v-if="isSelected(meat.id)"
+                name="i-lucide-check"
+                class="size-3 text-stone-950"
+              />
+            </div>
+            <span
+              class="text-sm font-medium truncate"
+              :class="isSelected(meat.id) ? 'text-amber-200' : 'text-stone-300'"
+            >
+              {{ meat.name }}
+            </span>
+          </button>
+
           <div
-            class="size-5 rounded-md border-2 flex items-center justify-center shrink-0 transition-all"
-            :class="[
-              state.selectedMeats.includes(meat.id)
-                ? 'bg-amber-500 border-amber-500'
-                : 'border-stone-600'
-            ]"
+            v-if="isSelected(meat.id)"
+            class="flex items-center gap-1 px-3 pb-2.5 -mt-0.5"
           >
-            <UIcon
-              v-if="state.selectedMeats.includes(meat.id)"
-              name="i-lucide-check"
-              class="size-3 text-stone-950"
-            />
+            <button
+              v-for="[key, p] in priorities"
+              :key="key"
+              class="flex items-center gap-0.5 px-2 py-1 rounded-md text-[11px] font-medium transition-all active:scale-95"
+              :class="[
+                getPriority(meat.id) === key
+                  ? [p.bg, p.color, 'ring-1', p.ring]
+                  : 'text-stone-600 hover:text-stone-400'
+              ]"
+              @click.stop="setPriority(meat.id, key)"
+            >
+              <UIcon :name="p.icon" class="size-3" />
+              {{ p.label }}
+            </button>
           </div>
-          <span
-            class="text-sm font-medium truncate"
-            :class="state.selectedMeats.includes(meat.id) ? 'text-amber-200' : 'text-stone-300'"
-          >
-            {{ meat.name }}
-          </span>
-        </button>
+        </div>
       </div>
     </div>
   </div>

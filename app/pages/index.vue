@@ -1,9 +1,15 @@
 <script setup lang="ts">
 const { state, totalPeople, reset } = useChurrascoCalculator()
 
-const currentStep = ref(0)
+const STEP_KEY = 'bbq-calculator-step'
+const savedStep = import.meta.client ? Number(localStorage.getItem(STEP_KEY)) || 0 : 0
+const currentStep = ref(savedStep)
 const direction = ref<'left' | 'right'>('left')
-const totalSteps = 5
+const totalSteps = 6
+
+if (import.meta.client) {
+  watch(currentStep, (val) => localStorage.setItem(STEP_KEY, String(val)))
+}
 
 const canProceed = computed(() => {
   switch (currentStep.value) {
@@ -34,9 +40,17 @@ function restart() {
   reset()
   direction.value = 'right'
   currentStep.value = 0
+  if (import.meta.client) localStorage.removeItem(STEP_KEY)
 }
 
-const stepLabels = ['Proximo: Carnes', 'Proximo: Bebidas', 'Proximo: Extras', 'Ver Resultado']
+const showResetModal = ref(false)
+
+function confirmRestart() {
+  showResetModal.value = false
+  restart()
+}
+
+const stepLabels = ['Próximo: Carnes', 'Próximo: Bebidas', 'Próximo: Acompanhamentos', 'Próximo: Essenciais', 'Ver Resultado']
 </script>
 
 <template>
@@ -61,12 +75,13 @@ const stepLabels = ['Proximo: Carnes', 'Proximo: Bebidas', 'Proximo: Extras', 'V
         <StepMeats v-else-if="currentStep === 1" key="meats" />
         <StepBeverages v-else-if="currentStep === 2" key="beverages" />
         <StepSides v-else-if="currentStep === 3" key="sides" />
-        <StepResult v-else-if="currentStep === 4" key="result" @restart="restart" />
+        <StepEssentials v-else-if="currentStep === 4" key="essentials" />
+        <StepResult v-else-if="currentStep === 5" key="result" @restart="restart" @back="prev" />
       </Transition>
     </main>
 
     <footer
-      v-if="currentStep < 4"
+      v-if="currentStep < 5"
       class="fixed bottom-0 inset-x-0 z-50"
     >
       <div class="bg-stone-950/80 backdrop-blur-xl border-t border-stone-800/50">
@@ -84,17 +99,61 @@ const stepLabels = ['Proximo: Carnes', 'Proximo: Bebidas', 'Proximo: Extras', 'V
 
           <UButton
             size="lg"
+            variant="ghost"
+            icon="i-lucide-rotate-ccw"
+            class="shrink-0"
+            @click="showResetModal = true"
+          />
+
+          <UButton
+            size="lg"
             block
             :disabled="!canProceed"
             class="flex-1"
             trailing-icon="i-lucide-arrow-right"
             @click="next"
           >
-            {{ stepLabels[currentStep] || 'Proximo' }}
+            {{ stepLabels[currentStep] || 'Próximo' }}
           </UButton>
         </div>
       </div>
     </footer>
+
+    <UModal v-model:open="showResetModal">
+      <template #content>
+        <div class="p-6 space-y-4">
+          <div class="flex items-center gap-3">
+            <div class="size-10 rounded-xl bg-red-500/20 flex items-center justify-center shrink-0">
+              <UIcon name="i-lucide-triangle-alert" class="size-5 text-red-400" />
+            </div>
+            <h3 class="text-lg font-bold text-stone-100">Limpar tudo?</h3>
+          </div>
+          <p class="text-sm text-stone-400">
+            Todos os dados preenchidos serão apagados e você voltará ao início. Essa ação não pode ser desfeita.
+          </p>
+          <div class="flex gap-3 pt-2">
+            <UButton
+              block
+              size="lg"
+              variant="ghost"
+              class="flex-1"
+              @click="showResetModal = false"
+            >
+              Cancelar
+            </UButton>
+            <UButton
+              block
+              size="lg"
+              color="error"
+              class="flex-1"
+              @click="confirmRestart"
+            >
+              Limpar tudo
+            </UButton>
+          </div>
+        </div>
+      </template>
+    </UModal>
   </div>
 </template>
 

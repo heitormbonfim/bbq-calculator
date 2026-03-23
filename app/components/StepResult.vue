@@ -1,10 +1,11 @@
 <script setup lang="ts">
 const emit = defineEmits<{
   restart: []
+  back: []
 }>()
 
-const { result, copyToClipboard, share } = useChurrascoCalculator()
-const totalMeatsKg = computed(() => Math.round(result.value.meats.reduce((sum, item) => sum + item.quantity, 0) * 10) / 10)
+const { state, result, fmt, copyToClipboard, share } = useChurrascoCalculator()
+const totalMeatsKg = computed(() => result.value.meats.reduce((sum, item) => sum + item.quantity, 0))
 const copied = ref(false)
 const toast = useToast()
 
@@ -42,16 +43,28 @@ async function handleShare() {
       </div>
       <div class="bg-stone-900/50 backdrop-blur border border-stone-800/50 rounded-2xl divide-y divide-stone-800/50">
         <div
-          v-for="item in result.meats"
+          v-for="(item, i) in result.meats"
           :key="item.name"
           class="flex items-center justify-between px-5 py-3"
         >
-          <span class="text-stone-300 text-sm">{{ item.name }}</span>
-          <span class="font-bold text-amber-300 tabular-nums">{{ item.quantity }} {{ item.unit }}</span>
+          <span class="text-stone-300 text-sm flex items-center gap-1.5">
+            {{ item.name }}
+            <UIcon
+              v-if="state.selectedMeats[i]?.priority === 'high'"
+              name="i-lucide-trending-up"
+              class="size-3.5 text-green-400"
+            />
+            <UIcon
+              v-else-if="state.selectedMeats[i]?.priority === 'low'"
+              name="i-lucide-trending-down"
+              class="size-3.5 text-red-400"
+            />
+          </span>
+          <span class="font-bold text-amber-300 tabular-nums">{{ fmt(item.quantity) }} {{ item.unit }}</span>
         </div>
         <div class="flex items-center justify-between px-5 py-3 bg-stone-800/30">
           <span class="text-stone-200 text-sm font-semibold">Total de Carnes</span>
-          <span class="font-bold text-amber-400 tabular-nums">{{ totalMeatsKg }} kg</span>
+          <span class="font-bold text-amber-400 tabular-nums">{{ fmt(totalMeatsKg) }} kg</span>
         </div>
       </div>
     </div>
@@ -68,14 +81,14 @@ async function handleShare() {
           class="flex items-center justify-between px-5 py-3"
         >
           <span class="text-stone-300 text-sm">{{ item.name }}</span>
-          <span class="font-bold text-amber-300 tabular-nums">{{ item.quantity }} {{ item.unit }}</span>
+          <span class="font-bold text-amber-300 tabular-nums">{{ fmt(item.quantity) }} {{ item.unit }}</span>
         </div>
       </div>
     </div>
 
     <div v-if="result.sides.length > 0" class="space-y-2">
       <div class="flex items-center gap-2 px-1">
-        <UIcon name="i-lucide-utensils" class="size-4 text-green-400" />
+        <UIcon name="i-lucide-salad" class="size-4 text-green-400" />
         <h3 class="text-sm font-semibold text-stone-300 uppercase tracking-wider">Acompanhamentos</h3>
       </div>
       <div class="bg-stone-900/50 backdrop-blur border border-stone-800/50 rounded-2xl divide-y divide-stone-800/50">
@@ -85,7 +98,24 @@ async function handleShare() {
           class="flex items-center justify-between px-5 py-3"
         >
           <span class="text-stone-300 text-sm">{{ item.name }}</span>
-          <span class="font-bold text-amber-300 tabular-nums">{{ item.quantity }} {{ item.unit }}</span>
+          <span class="font-bold text-amber-300 tabular-nums">{{ item.unit === 'unidades' ? item.quantity : fmt(item.quantity) }} {{ item.unit }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div v-if="result.essentials.length > 0" class="space-y-2">
+      <div class="flex items-center gap-2 px-1">
+        <UIcon name="i-lucide-flame-kindling" class="size-4 text-orange-400" />
+        <h3 class="text-sm font-semibold text-stone-300 uppercase tracking-wider">Essenciais</h3>
+      </div>
+      <div class="bg-stone-900/50 backdrop-blur border border-stone-800/50 rounded-2xl divide-y divide-stone-800/50">
+        <div
+          v-for="item in result.essentials"
+          :key="item.name"
+          class="flex items-center justify-between px-5 py-3"
+        >
+          <span class="text-stone-300 text-sm">{{ item.name }}</span>
+          <span class="font-bold text-amber-300 tabular-nums">{{ item.unit === 'unidades' ? item.quantity : fmt(item.quantity) }} {{ item.unit }}</span>
         </div>
       </div>
     </div>
@@ -113,12 +143,21 @@ async function handleShare() {
       </UButton>
     </div>
 
-    <button
-      class="w-full py-3 text-sm font-medium text-stone-500 hover:text-stone-300 transition-colors"
-      @click="emit('restart')"
-    >
-      <UIcon name="i-lucide-rotate-ccw" class="size-4 mr-1 inline" />
-      Recalcular
-    </button>
+    <div class="flex items-center justify-between pt-1">
+      <button
+        class="py-3 text-sm font-medium text-stone-500 hover:text-stone-300 transition-colors"
+        @click="emit('back')"
+      >
+        <UIcon name="i-lucide-arrow-left" class="size-4 mr-1 inline" />
+        Voltar
+      </button>
+      <button
+        class="py-3 text-sm font-medium text-stone-500 hover:text-stone-300 transition-colors"
+        @click="emit('restart')"
+      >
+        <UIcon name="i-lucide-rotate-ccw" class="size-4 mr-1 inline" />
+        Recalcular
+      </button>
+    </div>
   </div>
 </template>

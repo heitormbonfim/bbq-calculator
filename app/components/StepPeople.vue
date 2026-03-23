@@ -5,7 +5,7 @@ const { state } = useChurrascoCalculator()
 
 const durations: { value: EventDuration; label: string; desc: string; icon: string }[] = [
   { value: 'short', label: 'Curto', desc: '2-3 horas', icon: 'i-lucide-clock' },
-  { value: 'medium', label: 'Medio', desc: '4-5 horas', icon: 'i-lucide-clock-3' },
+  { value: 'medium', label: 'Médio', desc: '4-5 horas', icon: 'i-lucide-clock-3' },
   { value: 'long', label: 'Longo', desc: '6+ horas', icon: 'i-lucide-clock-12' }
 ]
 
@@ -22,7 +22,7 @@ function decrement(field: 'men' | 'women' | 'children') {
   <div class="space-y-6">
     <div>
       <h2 class="text-xl font-bold text-stone-100 mb-1">Quantas pessoas?</h2>
-      <p class="text-sm text-stone-400">Informe o numero de convidados</p>
+      <p class="text-sm text-stone-400">Informe o número de convidados</p>
     </div>
 
     <div class="space-y-3">
@@ -30,7 +30,7 @@ function decrement(field: 'men' | 'women' | 'children') {
         v-for="person in [
           { field: 'men' as const, label: 'Homens', icon: 'i-lucide-user', color: 'text-blue-400' },
           { field: 'women' as const, label: 'Mulheres', icon: 'i-lucide-user', color: 'text-pink-400' },
-          { field: 'children' as const, label: 'Criancas', icon: 'i-lucide-baby', color: 'text-green-400' }
+          { field: 'children' as const, label: 'Crianças', icon: 'i-lucide-baby', color: 'text-green-400' }
         ]"
         :key="person.field"
         class="flex items-center justify-between bg-stone-900/50 backdrop-blur border border-stone-800/50 rounded-2xl px-5 py-4"
@@ -63,7 +63,7 @@ function decrement(field: 'men' | 'women' | 'children') {
     </div>
 
     <div>
-      <h3 class="text-sm font-semibold text-stone-300 mb-3 uppercase tracking-wider">Duracao do evento</h3>
+      <h3 class="text-sm font-semibold text-stone-300 mb-3 uppercase tracking-wider">Duração do evento</h3>
       <div class="grid grid-cols-3 gap-2">
         <button
           v-for="d in durations"
