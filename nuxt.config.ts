@@ -26,13 +26,18 @@ export default defineNuxtConfig({
   pwa: {
     registerType: 'autoUpdate',
     manifest: {
+      id: '/',
       name: 'Calculadora de Churrasco',
       short_name: 'Churrasco',
       description: 'Calcule a quantidade ideal de carnes, bebidas e acompanhamentos para seu churrasco',
+      start_url: '/',
+      scope: '/',
       theme_color: '#0c0a09',
       background_color: '#0c0a09',
       display: 'standalone',
       orientation: 'portrait',
+      lang: 'pt-BR',
+      categories: ['utilities', 'food'],
       icons: [
         { src: '/icon-192x192.png', sizes: '192x192', type: 'image/png' },
         { src: '/icon-512x512.png', sizes: '512x512', type: 'image/png' },
@@ -41,7 +46,14 @@ export default defineNuxtConfig({
     },
     workbox: {
       navigateFallback: '/',
-      globPatterns: ['**/*.{js,css,html,png,svg,ico,woff2}']
+      globPatterns: ['**/*.{js,css,html,png,svg,ico,woff2}'],
+      runtimeCaching: [
+        {
+          urlPattern: /^https:\/\/.*\.(png|jpg|jpeg|svg|gif|ico)$/,
+          handler: 'CacheFirst',
+          options: { cacheName: 'images', expiration: { maxEntries: 50, maxAgeSeconds: 30 * 24 * 60 * 60 } }
+        }
+      ]
     }
   },
 
